@@ -6,9 +6,10 @@ This is an early port of [https://github.com/foxy82/pi-usb-gadget-controller] fr
 
 ## Installation 
 
-Install Circuit Python version 8.0.0 or later on to the Pico W (at time of writing this version is still in beta)
-Into the lib folder copy the adafruit_hid folder from the library bundles.
-Into the main folder copy all the files in this repo.
+* Install Circuit Python version 8.0.0 or later on to the Pico W (at time of writing this version is still in beta)
+* Into the lib folder copy the adafruit_hid folder from the library bundles.
+* Into the main folder copy all the files in this repo.
+* Edit `secrets.py` and enter your own `WIFI_SSID` and `WIFI_PASSWORD` 
 
 ## Testing / Running
 
