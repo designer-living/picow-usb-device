@@ -40,10 +40,23 @@ class KeyboardDevice:
         self.keyboard_layout = KeyboardLayoutUS(self.keyboard)  # We're in the US :)
 
     def can_handle(self, key_state, key):
-        return key_state in ["up", "down", "press"] and key in KEYS_KEYBOARD
+        return key_state in ["up", "down", "press"] and (key in KEYS_KEYBOARD or key in KEYBOARD_MODIFIER_KEYS)
 
     def handle(self, key_state, key):
-        pass
+        key_to_send = KEYS_KEYBOARD.get(key, None)
+        if key_to_send is None:
+            key_to_send = KEYBOARD_MODIFIER_KEYS.get(key, None)
+
+        if key_to_send is None:
+            print(f"Unknown key {key}")
+            return False
+
+        if key_state == "press":
+            self.keyboard.send(key_to_send)
+        elif key_state == "down":
+            self.keyboard.press(key_to_send)
+        elif key_state == "up":
+            self.keyboard.release(key_to_send)
 
 
 class MouseDevice:
