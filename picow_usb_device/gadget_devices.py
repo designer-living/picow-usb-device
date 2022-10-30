@@ -1,6 +1,6 @@
 import usb_hid
 from adafruit_hid.consumer_control import ConsumerControl
-from keys import keys_consumer_control
+from keys import KEYS_CONSUMER_CONTROL, KEYS_KEYBOARD, KEYBOARD_MODIFIER_KEYS, MOUSE_BUTTONS
 
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keyboard_layout_us import KeyboardLayoutUS
@@ -10,7 +10,7 @@ from adafruit_hid.mouse import Mouse
 
 
 class ConsumerControlDevice:
-    
+
     def __init__(self):
         self.device = ConsumerControl(usb_hid.devices)
 
@@ -20,37 +20,60 @@ class ConsumerControlDevice:
         returns True if it can handle it or False if this gadget can't
         handle this message.
         """
-        return key in keys_consumer_control 
-     
+        return key_state in ["up", "down", "press"] and key in KEYS_CONSUMER_CONTROL
+
     def handle(self, key_state, key):
         if key_state == "press":
-            key_to_send = keys_consumer_control.get(key)
+            key_to_send = KEYS_CONSUMER_CONTROL.get(key)
             self.device.send(key_to_send)
         elif key_state == "down":
-            key_to_send = keys_consumer_control.get(key)
+            key_to_send = KEYS_CONSUMER_CONTROL.get(key)
             self.device.press(key_to_send)
-        else:
+        elif key_state == "up":
             self.device.release()
-            
+
+
 class KeyboardDevice:
-    
+
     def __init__(self):
         self.keyboard = Keyboard(usb_hid.devices)
         self.keyboard_layout = KeyboardLayoutUS(self.keyboard)  # We're in the US :)
 
     def can_handle(self, key_state, key):
-        return False
-     
+        return key_state in ["up", "down", "press"] and key in KEYS_KEYBOARD
+
     def handle(self, key_state, key):
         pass
-        
+
+
 class MouseDevice:
-    
+
+    DELIMITER = "|"
+
     def __init__(self):
         self.device = Mouse(usb_hid.devices)
 
     def can_handle(self, key_state, key):
+        if key_state == "rel":
+            return True
+        elif key_state in ["up", "down", "press"] and key in MOUSE_BUTTONS:
+            return True
         return False
-     
+
     def handle(self, key_state, key):
-        pass
+        if key_state == "press":
+            key_to_send = MOUSE_BUTTONS.get(key)
+            self.device.click(key_to_send)
+        elif key_state == "down":
+            key_to_send = MOUSE_BUTTONS.get(key)
+            self.device.press(key_to_send)
+        elif key_state == "up":
+            key_to_send = MOUSE_BUTTONS.get(key)
+            self.device.release(key_to_send)
+        elif key_state == "rel":
+            split_message = key.split(self.DELIMITER)
+            if len(split_message) != 2:
+                print(f"Unexpected message: {key}")
+            else:
+                self.device.move(x=int(split_message[0]), y=int(split_message[1]))
+

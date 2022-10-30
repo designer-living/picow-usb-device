@@ -3,6 +3,7 @@ try:
 except ImportError:
     pass
 from errno import EAGAIN, ECONNRESET
+import time
 
 
 class SocketServer:
@@ -10,8 +11,8 @@ class SocketServer:
 
     def __init__(self, socket_source: Any, buffer_size: int = 1024) -> None:
         """Create a server, and get it ready to run.
-        :param socket_source: An object that is a source of sockets. 
-          This could be a `socketpool` in CircuitPython or 
+        :param socket_source: An object that is a source of sockets.
+          This could be a `socketpool` in CircuitPython or
           the `socket` module in CPython.
         """
         self._buffer = bytearray(buffer_size)
@@ -48,6 +49,7 @@ class SocketServer:
         while True:
             try:
                 self.poll()
+                # time.sleep(0.001)
             except OSError:
                 continue
 
@@ -77,7 +79,7 @@ class SocketServer:
             if not still_open:
                 self._connections.remove(conn)
         self._poll_incoming_connections()
-        
+
     def _send(self, conn, buf):  # pylint: disable=no-self-use
         bytes_sent = 0
         bytes_to_send = len(buf)
@@ -122,7 +124,7 @@ class SocketServer:
             # if connection is not None:
             print("Connection from ", client_address)
             connection.setblocking(False)
-            self._connections.append(connection)        
+            self._connections.append(connection)
         except OSError as ex:
             # handle EAGAIN and ECONNRESET
             if ex.errno == EAGAIN:

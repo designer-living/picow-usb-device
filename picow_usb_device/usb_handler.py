@@ -1,21 +1,20 @@
-from gadget_devices import ConsumerControlDevice
+from gadget_devices import ConsumerControlDevice, KeyboardDevice, MouseDevice
+
 
 class UsbHandler:
 
     DELIMITER = "|"
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
         self.devices = [
             ConsumerControlDevice(),
-            # KeyboardDevice(),
-            # MouseDevice(),
+            KeyboardDevice(),
+            MouseDevice(),
         ]
 
     def handle_message(self, message):
-        # if message == "stop":
-        #    raise Exception("Stopping")
-        split_message = message.split(self.DELIMITER)
+        # print(f"Handling message {message}")
+        split_message = message.split(self.DELIMITER, 1)
         if len(split_message) == 1:
             key_code = split_message[0]
             key_state = "press"
