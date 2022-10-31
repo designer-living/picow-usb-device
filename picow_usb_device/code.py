@@ -1,5 +1,7 @@
 import socketpool
 import wifi
+import board
+import digitalio
 
 from socketserver import SocketServer
 from secrets import secrets
@@ -7,6 +9,10 @@ from usb_handler import UsbHandler
 from control_handler import ControlMessageHandler
 # from errno import EADDRINUSE
 
+# Turn on the LED so we can see we have power.
+led = digitalio.DigitalInOut(board.LED)
+led.direction = digitalio.Direction.OUTPUT
+led.value = True
 
 # Connect to WIFI
 print()
