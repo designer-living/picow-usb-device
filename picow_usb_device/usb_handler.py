@@ -7,9 +7,9 @@ class UsbHandler:
 
     def __init__(self):
         self.devices = [
+            MouseDevice(),
             ConsumerControlDevice(),
             KeyboardDevice(),
-            MouseDevice(),
         ]
 
     def handle_message(self, message):

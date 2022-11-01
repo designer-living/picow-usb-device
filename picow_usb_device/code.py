@@ -35,19 +35,21 @@ control_handler = ControlMessageHandler()
 def process(received_message):
     global message
     try:
-        for letter in received_message.decode():
-            if ord(letter) == MESSAGE_DELIMITER:
+        for letter in received_message:
+            if letter == MESSAGE_DELIMITER:
                 message_to_handle = message
                 if len(message) > 1 and message[-1] == TRIM_CHAR:
                     message_to_handle = message[:-1]
 
-                if not control_handler.handle_message(message_to_handle):
-                    usb_handler.handle_message(message_to_handle)
-                else:
+                resp = control_handler.handle_message(message_to_handle)
+                if resp is not None:
                     print("Handled Control message")
+                    message = EMPTY_STRING
+                    return resp
+                usb_handler.handle_message(message_to_handle)
                 message = EMPTY_STRING
             else:
-                message = message + letter
+                message = message + chr(letter)
     except Exception as e:
         print(e)
         # Reset the message if we have an error as it could be corrupt
@@ -59,6 +61,7 @@ server.request_buffer_size = 64
 # TODO remove try/catch when SO_REUSEADDRESS is out
 # https://github.com/adafruit/circuitpython/commit/ca25016b528903716232c4ac86fe680e6fcb0d27
 #try:
+print("Starting")
 server.serve_forever(str(wifi.radio.ipv4_address), 5000)
 #except OSError as ex:
 #    if ex.errno == EADDRINUSE:
