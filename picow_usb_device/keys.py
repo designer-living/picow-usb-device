@@ -1,7 +1,7 @@
 NULL_BYTE = 0x0
 KEYS_CONSUMER_CONTROL = {
     "KEY_ESC": "",
-    "KEY_ENTER": 0x41,
+#    "KEY_ENTER": 0x41,
     "KEY_KPMINUS": "",
     "KEY_KPPLUS": "",
     "KEY_UP": 0x42,
