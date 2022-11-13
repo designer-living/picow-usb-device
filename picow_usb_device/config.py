@@ -1,5 +1,5 @@
 PORT = 5000
-HOSTNAME = "my_hostname"
+HOSTNAME = "myhostname"
 
 HTTP_SERVER_ENABLED = True
 HTTP_SERVER_PORT = 80

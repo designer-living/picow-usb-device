@@ -3,6 +3,8 @@ import wifi
 import board
 import digitalio
 import time
+import microcontroller
+import watchdog
 
 from secrets import secrets
 from config import PORT, HOSTNAME
@@ -19,6 +21,12 @@ from control_handler import ControlMessageHandler
 led = digitalio.DigitalInOut(board.LED)
 led.direction = digitalio.Direction.OUTPUT
 led.value = True
+
+# Watchdog will restart if the app hangs
+# I've seen this happen if you hit the webserver too quickly
+wdt = microcontroller.watchdog
+wdt.timeout = 5
+wdt.mode = watchdog.WatchDogMode.RESET
 
 # Connect to WIFI
 print()
@@ -51,11 +59,13 @@ if http_server is not None:
 
 while True:
     try:
+        wdt.feed()
         server.poll()
         if http_server is not None:
             http_server.poll()
         if admin_server is not None:
             admin_server.poll()
         time.sleep(0.001)
-    except OSError:
+    except OSError as e:
+        print(e)
         continue

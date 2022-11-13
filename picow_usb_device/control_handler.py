@@ -16,7 +16,16 @@ class ControlMessageHandler:
             'USB_STATUS': self.usb_status,
             'USB_ON': self.usb_on,
             'USB_OFF': self.usb_off,
+            'HELP': self.help,
         }
+
+    def help(self, message):
+        resp = "\n".join(self.message_handlers.keys())
+        return f"{resp}\n"
+
+    def soft_reset(self, message):
+        supervisor.reload()
+        return self.DONE
 
     def soft_reset(self, message):
         supervisor.reload()
