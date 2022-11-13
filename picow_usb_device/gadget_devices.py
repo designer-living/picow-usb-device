@@ -87,6 +87,7 @@ class MouseDevice:
             split_message = key.split(self.DELIMITER)
             if len(split_message) != 2:
                 print(f"Unexpected message: {key}")
+                pass
             else:
                 self.device.move(x=int(split_message[0]), y=int(split_message[1]))
 

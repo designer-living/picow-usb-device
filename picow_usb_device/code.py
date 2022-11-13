@@ -7,8 +7,8 @@ import microcontroller
 import watchdog
 
 from secrets import secrets
-from config import PORT, HOSTNAME
-from config import HTTP_SERVER_ENABLED, HTTP_SERVER_PORT,
+from config import PORT, HOSTNAME, WATCHDOG_ENABLED
+from config import HTTP_SERVER_ENABLED, HTTP_SERVER_PORT
 from config import ADMIN_SERVER_ENABLED, ADMIN_SERVER_PORT
 
 
@@ -24,9 +24,12 @@ led.value = True
 
 # Watchdog will restart if the app hangs
 # I've seen this happen if you hit the webserver too quickly
-wdt = microcontroller.watchdog
-wdt.timeout = 5
-wdt.mode = watchdog.WatchDogMode.RESET
+wdt = None
+if WATCHDOG_ENABLED:
+    wdt = microcontroller.watchdog
+    wdt.timeout = 5
+    wdt.mode = watchdog.WatchDogMode.RESET
+
 
 # Connect to WIFI
 print()
@@ -59,7 +62,8 @@ if http_server is not None:
 
 while True:
     try:
-        wdt.feed()
+        if wdt is not None:
+            wdt.feed()
         server.poll()
         if http_server is not None:
             http_server.poll()
