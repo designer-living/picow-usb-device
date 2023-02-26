@@ -30,14 +30,15 @@ if WATCHDOG_ENABLED:
     wdt.timeout = 5
     wdt.mode = watchdog.WatchDogMode.RESET
 
-
 # Connect to WIFI
 print()
-ssid = os.getenv('CIRCUITPY_WIFI_SSID')
-print(f"Connecting to Wifi: {ssid}")
-wifi.radio.hostname = HOSTNAME
-wifi.radio.connect(ssid, os.getenv('CIRCUITPY_WIFI_PASSWORD'))
-print(f"Connected: IP address is {wifi.radio.ipv4_address}")
+if not wifi.radio.ipv4_address:
+    ssid = os.getenv('CIRCUITPY_WIFI_SSID')
+    print(f"Connecting to Wifi: {ssid}")
+    wifi.radio.hostname = HOSTNAME
+    wifi.radio.connect(ssid, os.getenv('CIRCUITPY_WIFI_PASSWORD'))
+    print(f"Connected: IP address is {wifi.radio.ipv4_address}")
+
 pool = socketpool.SocketPool(wifi.radio)
 host = str(wifi.radio.ipv4_address)
 
