@@ -27,3 +27,4 @@ class UsbHandler:
             if device.can_handle(key_state, key_code):
                 device.handle(key_state, key_code)
                 break
+        # print(f"Handled message {message}")

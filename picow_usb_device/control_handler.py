@@ -68,11 +68,11 @@ class ControlMessageHandler:
             return f"{e}\n".encode()
 
     def can_handle(self, message):
-        print("Can Handle?", message,  message in self.message_handlers)
+        # print("Can Handle?", message,  message in self.message_handlers)
         return message in self.message_handlers
 
     def handle_message(self, message):
-        print(message)
+        # print(message)
         handler = self.message_handlers.get(message)
         if handler is not None:
             return handler(message)

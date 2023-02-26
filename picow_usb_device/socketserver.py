@@ -129,7 +129,7 @@ class SocketServer:
         try:
             connection, client_address = self._sock.accept()
             # if connection is not None:
-            print("Connection from ", client_address)
+            # print("Connection from ", client_address)
             connection.setblocking(False)
             self._connections.append(connection)
         except OSError as ex:

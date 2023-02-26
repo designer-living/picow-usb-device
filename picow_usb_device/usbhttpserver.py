@@ -31,8 +31,9 @@ class UsbHttpServer:
         @self.server.route("/KEY_PLAYPAUSE")
         @self.server.route("/KEY_MUTE")
         def key_mute(request):  # pylint: disable=unused-argument
-            print(request)
+            # print(request)
             self.handler.handle_message(f"press|{request.path.split('/')[1]}")
+            # print("handled")
             return HTTPResponse(filename="/html/index.html")
 
 

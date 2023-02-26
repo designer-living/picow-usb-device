@@ -48,7 +48,7 @@ class KeyboardDevice:
             key_to_send = KEYBOARD_MODIFIER_KEYS.get(key, None)
 
         if key_to_send is None:
-            print(f"Unknown key {key}")
+            # print(f"Unknown key {key}")
             return False
 
         if key_state == "press":

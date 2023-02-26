@@ -21,15 +21,15 @@ class MessageServer:
                         message_to_handle = self.message
                         if len(self.message) > 1 and self.message[-1] == TRIM_CHAR:
                             message_to_handle = self.message[:-1]
-                        print(name, message_to_handle)
+                        # print(name, message_to_handle)
                         resp = self.handler.handle_message(message_to_handle)
                         self.message = EMPTY_STRING
                         return resp
                     else:
                         self.message = self.message + chr(letter)
             except Exception as e:
-                print(name)
-                print(e)
+                # print(name)
+                # print(e)
                 # Reset the message if we have an error as it could be corrupt
                 self.message = EMPTY_STRING
             return None
