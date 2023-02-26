@@ -1,25 +1,50 @@
 from board import *
 import storage
 import digitalio
+import json
 
-storageFromPin = False
+from config import DEFAULT_CONFIG
+
+# If GPIO 15 is shorted we will enable storage
 noStoragePin = digitalio.DigitalInOut(GP15)
 noStoragePin.switch_to_input(pull=digitalio.Pull.UP)
 storageFromPin = not noStoragePin.value
 
-storageFromFile = False
+# Default to USB enabled if we don't find the config file.
+config = {"USB_ENABLED": True}
+
 try:
-    with open("flag.usb") as f:
-        f.readlines()
-    storageFromFile = True
+    with open("config.json") as f:
+        config = json.load(f)
 except OSError as e:
-    print(e)
+    try:
+        print("Error loading config: ", e)
+        # Most likely we couldn't find the config
+        print("Creating default config file")
+        config = DEFAULT_CONFIG
+        storage.remount(
+            mount_path="/",
+            readonly=False,
+        )
+        with open("config.json", "w") as f:
+            json.dump(config, f)
+        storage.remount(
+            mount_path="/",
+            readonly=True,
+        )
+    except Exception as e2:
+        print("Error creating default config:", e2)
+
+print("Config:", config)
+
+storageFromFile = config.get("USB_ENABLED", True)
 
 enableUsb = storageFromPin or storageFromFile
 
 if enableUsb:
     # normal boot
     print("USB drive enabled")
+    storage.enable_usb_drive()
 else:
     # don't show USB drive to host PC
     print("Disabling USB drive")

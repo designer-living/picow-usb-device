@@ -6,18 +6,28 @@ import time
 import microcontroller
 import watchdog
 import os
+import json
 
-from config import PORT, HOSTNAME, WATCHDOG_ENABLED
-from config import HTTP_SERVER_ENABLED, HTTP_SERVER_PORT
-from config import ADMIN_SERVER_ENABLED, ADMIN_SERVER_PORT
-
+from config import DEFAULT_CONFIG, get_config_or_default
 
 from messageserver import MessageServer
 from usbhttpserver import UsbHttpServer
 from usb_handler import UsbHandler
 from control_handler import ControlMessageHandler
 
-# Turn on the LED so we can see we have power.
+# Load Config from config.json
+config = {}
+try:
+    with open("config.json") as f:
+        config = json.load(f)
+except OSError as e:
+    # boot.py should have created a default config file
+    # so this error would be strange.
+    print("Couldn't open config file but boot.py should have created it! Using default", e)
+    config = DEFAULT_CONFIG
+print("Config: ", config)
+
+# Turn on the LED, so we can see we have power.
 led = digitalio.DigitalInOut(board.LED)
 led.direction = digitalio.Direction.OUTPUT
 led.value = True
@@ -25,7 +35,7 @@ led.value = True
 # Watchdog will restart if the app hangs
 # I've seen this happen if you hit the webserver too quickly
 wdt = None
-if WATCHDOG_ENABLED:
+if get_config_or_default("WATCHDOG_ENABLED", config):
     wdt = microcontroller.watchdog
     wdt.timeout = 5
     wdt.mode = watchdog.WatchDogMode.RESET
@@ -35,7 +45,7 @@ print()
 if not wifi.radio.ipv4_address:
     ssid = os.getenv('CIRCUITPY_WIFI_SSID')
     print(f"Connecting to Wifi: {ssid}")
-    wifi.radio.hostname = HOSTNAME
+    wifi.radio.hostname = get_config_or_default("HOSTNAME", config)
     wifi.radio.connect(ssid, os.getenv('CIRCUITPY_WIFI_PASSWORD'))
     print(f"Connected: IP address is {wifi.radio.ipv4_address}")
 
@@ -47,18 +57,18 @@ usb_handler = UsbHandler()
 server = MessageServer(pool, "USBServer", usb_handler, 64)
 
 http_server = None
-if HTTP_SERVER_ENABLED:
+if get_config_or_default("HTTP_SERVER_ENABLED", config):
     http_server = UsbHttpServer(pool, "HttpServer", usb_handler)
 
 admin_server = None
-if ADMIN_SERVER_ENABLED:
+if get_config_or_default("ADMIN_SERVER_ENABLED", config):
     admin_server = MessageServer(pool, "AdminServer", ControlMessageHandler())
 
-server.start(host, PORT)
+server.start(host, get_config_or_default("PORT", config))
 if admin_server is not None:
-    admin_server.start(host, ADMIN_SERVER_PORT)
+    admin_server.start(host, get_config_or_default("ADMIN_SERVER_PORT", config))
 if http_server is not None:
-    http_server.start(host, HTTP_SERVER_PORT)
+    http_server.start(host, get_config_or_default("HTTP_SERVER_PORT", config))
 
 while True:
     try:
