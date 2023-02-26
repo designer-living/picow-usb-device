@@ -16,6 +16,8 @@ class ControlMessageHandler:
             'USB_STATUS': self.usb_status,
             'USB_ON': self.usb_on,
             'USB_OFF': self.usb_off,
+            'WATCHDOG_ON': self.watchdog_on,
+            'WATCHDOG_OFF': self.watchdog_off,
             'HELP': self.help,
             'CONFIG': self.read_config,
             'WRITE_CONFIG': self.write_config
@@ -67,6 +69,26 @@ class ControlMessageHandler:
     def usb_off(self, message):
         try:
             self.config["USB_ENABLED"] = False
+            storage.remount("/", False)
+            with open("config.json", "w") as f:
+                json.dump(self.config, f)
+            return self.DONE
+        except Exception as e:
+            return f"{e}\n".encode()
+
+    def watchdog_on(self, message):
+        try:
+            self.config["WATCHDOG_ENABLED"] = True
+            storage.remount("/", False)
+            with open("config.json", "w") as f:
+                json.dump(self.config, f)
+            return self.DONE
+        except Exception as e:
+            return f"{e}\n".encode()
+
+    def watchdog_off(self, message):
+        try:
+            self.config["WATCHDOG_ENABLED"] = False
             storage.remount("/", False)
             with open("config.json", "w") as f:
                 json.dump(self.config, f)
