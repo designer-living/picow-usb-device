@@ -58,7 +58,10 @@ host = str(wifi.radio.ipv4_address)
 
 usb_handler = UsbHandler()
 
-server = MessageServer(pool, "USBServer", usb_handler, 64)
+
+server = None
+if get_config_or_default("SOCKET_SERVER_ENABLED", config):
+    server = MessageServer(pool, "USBServer", usb_handler, 64)
 
 http_server = None
 if get_config_or_default("HTTP_SERVER_ENABLED", config):
@@ -68,7 +71,8 @@ admin_server = None
 if get_config_or_default("ADMIN_SERVER_ENABLED", config):
     admin_server = MessageServer(pool, "AdminServer", ControlMessageHandler())
 
-server.start(host, get_config_or_default("PORT", config))
+if server is not None:
+    server.start(host, get_config_or_default("PORT", config))
 if admin_server is not None:
     admin_server.start(host, get_config_or_default("ADMIN_SERVER_PORT", config))
 if http_server is not None:
@@ -78,7 +82,8 @@ while True:
     try:
         if wdt is not None:
             wdt.feed()
-        server.poll()
+        if server is not None:
+            server.poll()
         if http_server is not None:
             http_server.poll()
         if admin_server is not None:
