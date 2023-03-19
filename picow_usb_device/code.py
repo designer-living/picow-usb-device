@@ -15,6 +15,7 @@ from usbhttpserver import UsbHttpServer
 from usb_handler import UsbHandler
 from control_handler import ControlMessageHandler
 
+time.sleep(5)
 # Load Config from config.json
 config = {}
 try:
