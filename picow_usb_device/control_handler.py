@@ -56,62 +56,43 @@ class ControlMessageHandler:
             return f"{e}\n".encode()
 
     def usb_on(self, message):
-        try:
-            self.config["USB_ENABLED"] = True
-            storage.remount("/", False)
-            with open("config.json", "w") as f:
-                json.dump(self.config, f)
-            return self.DONE
-        except Exception as e:
-            return f"{e}\n".encode()
+        return self._write_config(
+            "USB_ENABLED",
+            True
+        )
 
     def usb_off(self, message):
-        try:
-            self.config["USB_ENABLED"] = False
-            storage.remount("/", False)
-            with open("config.json", "w") as f:
-                json.dump(self.config, f)
-            return self.DONE
-        except Exception as e:
-            return f"{e}\n".encode()
+        return self._write_config(
+            "USB_ENABLED",
+            False
+        )
 
     def watchdog_on(self, message):
-        try:
-            self.config["WATCHDOG_ENABLED"] = True
-            storage.remount("/", False)
-            with open("config.json", "w") as f:
-                json.dump(self.config, f)
-            return self.DONE
-        except Exception as e:
-            return f"{e}\n".encode()
+        return self._write_config(
+            "WATCHDOG_ENABLED",
+            True
+        )
 
     def watchdog_off(self, message):
-        try:
-            self.config["WATCHDOG_ENABLED"] = False
-            storage.remount("/", False)
-            with open("config.json", "w") as f:
-                json.dump(self.config, f)
-            return self.DONE
-        except Exception as e:
-            return f"{e}\n".encode()
+        return self._write_config(
+            "WATCHDOG_ENABLED",
+            False
+        )
 
     def read_config(self, message):
-        try:
-            with open("config.json") as f:
-                self.config = json.load(f)
-            return f"{self.config}".encode()
-        except Exception as e:
-            return f"{e}\n".encode()
+        self._read_config()
+        return f"{self.config}".encode()
 
     def write_config(self, message):
         # TODO make it so we can write any config by passing it in the message
-        try:
-            storage.remount("/", False)
-            with open("config.json", "w") as f:
-                json.dump(self.config, f)
-            return f"{self.config}".encode()
-        except Exception as e:
-            return f"{e}\n".encode()
+        # try:
+        #     storage.remount("/", False)
+        #     with open("config.json", "w") as f:
+        #         json.dump(self.config, f)
+        #     return f"{self.config}".encode()
+        # except Exception as e:
+        #     return f"{e}\n".encode()
+        return f"NOT IMPLEMENTED".encode()
 
     def settings_toml(self, message):
         try:
@@ -155,3 +136,23 @@ class ControlMessageHandler:
         if handler is not None:
             return handler(message)
         return None
+
+    def _write_config(self, key, value):
+        self._read_config()
+        try:
+            self.config[key] = value
+            storage.remount("/", False)
+            with open("config.json", "w") as f:
+                json.dump(self.config, f)
+            storage.remount("/", True)
+            return self.DONE
+        except Exception as e:
+            return f"{e}\n".encode()
+
+    def _read_config(self):
+        try:
+            with open("config.json") as f:
+                self.config = json.load(f)
+            return self.config
+        except Exception as e:
+            return f"{e}\n".encode()
