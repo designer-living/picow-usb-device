@@ -1,9 +1,9 @@
 from socketserver import SocketServer
-from usb_handler import UsbHandler
 
 EMPTY_STRING = ""
 MESSAGE_DELIMITER = ord("\n")
 TRIM_CHAR = "\r"
+
 
 class MessageServer:
 
@@ -36,15 +36,9 @@ class MessageServer:
         if buffer_size is not None:
             self.server.request_buffer_size = buffer_size
 
-
-
     def start(self, host, port):
         print(f"Starting {self.name} on {host}:{port}")
         self.server.start(host, port)
 
-
     def poll(self):
         self.server.poll()
-
-
-

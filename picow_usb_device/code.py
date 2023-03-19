@@ -1,8 +1,12 @@
+# This is a workaround mentioned here:
+# https://github.com/adafruit/circuitpython/issues/7333
+import time
+time.sleep(5)
+
 import socketpool
 import wifi
 import board
 import digitalio
-import time
 import microcontroller
 import watchdog
 import os
@@ -15,7 +19,6 @@ from usbhttpserver import UsbHttpServer
 from usb_handler import UsbHandler
 from control_handler import ControlMessageHandler
 
-time.sleep(5)
 # Load Config from config.json
 config = {}
 try:
@@ -41,7 +44,7 @@ if get_config_or_default("WATCHDOG_ENABLED", config):
     wdt.timeout = 5
     wdt.mode = watchdog.WatchDogMode.RESET
 
-# Connect to WIFI
+# Connect to WI-FI
 print()
 if not wifi.radio.ipv4_address:
     ssid = os.getenv('CIRCUITPY_WIFI_SSID')

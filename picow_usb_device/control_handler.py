@@ -2,7 +2,7 @@ import json
 import storage
 import supervisor
 import microcontroller
-from os import remove as delete_file
+import re
 
 
 class ControlMessageHandler:
@@ -10,6 +10,7 @@ class ControlMessageHandler:
 
     def __init__(self):
         self.message_handlers = {
+            'HELP': self.help,
             'SOFT_RESET': self.soft_reset,
             'HARD_RESET': self.hard_reset,
             'SHOW_BOOT_OUT': self.show_boot_out,
@@ -18,9 +19,11 @@ class ControlMessageHandler:
             'USB_OFF': self.usb_off,
             'WATCHDOG_ON': self.watchdog_on,
             'WATCHDOG_OFF': self.watchdog_off,
-            'HELP': self.help,
             'CONFIG': self.read_config,
-            'WRITE_CONFIG': self.write_config
+            'WRITE_CONFIG': self.write_config,
+            'SETTINGS.TOML': self.settings_toml,
+            'WEBFLOW_ON': self.webflow_on,
+            'WEBFLOW_OFF': self.webflow_off,
         }
         self.config = {}
         self.read_config("")
@@ -28,10 +31,6 @@ class ControlMessageHandler:
     def help(self, message):
         resp = "\n".join(self.message_handlers.keys())
         return f"{resp}\n"
-
-    def soft_reset(self, message):
-        supervisor.reload()
-        return self.DONE
 
     def soft_reset(self, message):
         supervisor.reload()
@@ -111,6 +110,38 @@ class ControlMessageHandler:
             with open("config.json", "w") as f:
                 json.dump(self.config, f)
             return f"{self.config}".encode()
+        except Exception as e:
+            return f"{e}\n".encode()
+
+    def settings_toml(self, message):
+        try:
+            with open("settings.toml") as f:
+                self.config = f.read()
+            return f"{self.config}".encode()
+        except Exception as e:
+            return f"{e}\n".encode()
+
+    def webflow_on(self, message):
+        try:
+            storage.remount("/", False)
+            with open("settings.toml") as f:
+                settings_toml = f.read()
+            settings_toml = settings_toml.replace('#CIRCUITPY_WEB_API_PASSWORD=', 'CIRCUITPY_WEB_API_PASSWORD=')
+            with open("settings.toml", "w") as f:
+                f.write(settings_toml)
+            return f"{settings_toml}".encode()
+        except Exception as e:
+            return f"{e}\n".encode()
+
+    def webflow_off(self, message):
+        try:
+            storage.remount("/", False)
+            with open("settings.toml") as f:
+                settings_toml = f.read()
+            settings_toml = settings_toml.replace('CIRCUITPY_WEB_API_PASSWORD=', '#CIRCUITPY_WEB_API_PASSWORD=')
+            with open("settings.toml", "w") as f:
+                f.write(settings_toml)
+            return f"{settings_toml}".encode()
         except Exception as e:
             return f"{e}\n".encode()
 

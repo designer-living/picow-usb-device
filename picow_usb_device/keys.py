@@ -1,7 +1,7 @@
 NULL_BYTE = 0x0
 KEYS_CONSUMER_CONTROL = {
     "KEY_ESC": "",
-#    "KEY_ENTER": 0x41,
+    # "KEY_ENTER": 0x41,
     "KEY_KPMINUS": "",
     "KEY_KPPLUS": "",
     "KEY_UP": 0x42,
@@ -158,8 +158,8 @@ KEYBOARD_MODIFIER_KEYS = {
     'KEY_LEFTMETA': 0xE3,
     'KEY_RIGHTCTRL': 0xE4,
     'KEY_RIGHTSHIFT': 0xE5,
-    'KEY_RIGHTALT' : 0xE6,
-    'KEY_RIGHTMETA' : 0xE7,
+    'KEY_RIGHTALT': 0xE6,
+    'KEY_RIGHTMETA': 0xE7,
 }
 
 KEYS_KEYBOARD = {
@@ -266,9 +266,9 @@ KEYS_KEYBOARD = {
     "KEY_PAGEDOWN": 0x4E,
     "KEY_INSERT": 0x49,
     "KEY_DELETE": "",
-#    "KEY_MUTE": 0x7F,
-#    "KEY_VOLUMEDOWN": 0x81,
-#    "KEY_VOLUMEUP": 0x80,
+    "KEY_MUTE": 0x7F,
+    # "KEY_VOLUMEDOWN": 0x81,
+    # "KEY_VOLUMEUP": 0x80,
     "KEY_POWER": "",
     "KEY_KPEQUAL": 0x67,
     "KEY_PAUSE": "",

@@ -59,7 +59,6 @@ class SocketServer:
         poll() in a while loop to handle incoming requests.
         :param str host: host name or IP address
         :param int port: port
-        :param str root: root directory to serve files from
         """
         self._sock = self._socket_source.socket(
             self._socket_source.AF_INET, self._socket_source.SOCK_STREAM
