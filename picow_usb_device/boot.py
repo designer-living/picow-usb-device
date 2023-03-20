@@ -10,18 +10,26 @@ noStoragePin = digitalio.DigitalInOut(GP15)
 noStoragePin.switch_to_input(pull=digitalio.Pull.UP)
 storageFromPin = not noStoragePin.value
 
-# Default to USB enabled if we don't find the config file.
-config = {"USB_ENABLED": True}
-
+write_config = False
 try:
     with open("config.json") as f:
         config = json.load(f)
 except OSError as e:
+    print("Error loading config: ", e)
+    # Most likely we couldn't find the config
+    print("Creating default config file")
+    config = DEFAULT_CONFIG
+    write_config = True
+
+for key in DEFAULT_CONFIG.keys():
+    if key not in config:
+        print(f"missing {key} - set to {DEFAULT_CONFIG[key]}")
+        config[key] = DEFAULT_CONFIG[key]
+        write_config = True
+
+if write_config:
     try:
-        print("Error loading config: ", e)
-        # Most likely we couldn't find the config
-        print("Creating default config file")
-        config = DEFAULT_CONFIG
+        print("Saving config")
         storage.remount(
             mount_path="/",
             readonly=False,
@@ -32,23 +40,22 @@ except OSError as e:
             mount_path="/",
             readonly=True,
         )
-    except Exception as e2:
-        print("Error creating default config:", e2)
+        print("Config saved")
+    except Exception as e:
+        print("Error writing config:", e)
 
-print("Config:", config)
+# print("Config:", config)
 
 storageFromFile = config.get("USB_ENABLED", True)
-
 enableUsb = storageFromPin or storageFromFile
-
+print(f"USB: {enableUsb}")
 if enableUsb:
     # normal boot
-    print("USB drive enabled")
     storage.enable_usb_drive()
+    print("Enabled")
 else:
     # don't show USB drive to host PC
-    print("Disabling USB drive")
     storage.disable_usb_drive()
     # usb_cdc.disable()
     # usb_midi.disable()
-    print("Disabled USB drive")
+    print("Disabled")
