@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+</head>
+<body class="bg-dark">
+    <br>
+    <div class="container-sm bg-dark rounded text-center">
+            <br>
+            <div class="row mt-3">
+                <div class="col-4">
+                    <div class="text-light">
+                    &emsp;
+                    </div>
+                </div>
+                <div class="col-10">
+                    <div class="text-light">
+                    HOSTNAME
+                    </div>
+                </div>
+                <div class="col-1">
+                    &emsp;
+                </div>
+            </div>
+            <br>
+            <div class="row mt-3">
+                <div class="col-4">
+                    <a class="btn btn-block btn-dark btn-lg text-light btn-outline-primary" href="/SOFT_RESET" role="button">SOFT RESET</a>
+                </div>
+                <div class="col-4">
+                    &emsp;
+                </div>
+                <div class="col-4">
+                    <a class="btn btn-block btn-dark btn-lg text-light btn-outline-primary" href="/HARD_RESET" role="button">HARD RESET</a>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-4">
+                    <a class="btn btn-block btn-dark btn-lg text-light btn-outline-primary" href="/SHOW_BOOT_OUT" role="button">Show Boot Out</a>
+                </div>
+                <div class="col-4">
+                    <a class="btn btn-block btn-dark btn-lg text-light btn-outline-primary" href="/SHOW_CONFIG" role="button">Show config.json</a>
+                </div>
+                <div class="col-4">
+                    <a class="btn btn-block btn-dark btn-lg text-light btn-outline-primary" href="/SHOW_SETTINGS_TOML" role="button">Show settings.toml</a>
+                </div>
+            </div>
+
+            <div class="row mt-5 justify-content-md-center">
+                <div class="col-4">
+                    {USB_TOGGLE}
+                </div>
+            </div>
+            <div class="row mt-3 justify-content-md-center">
+                <div class="col-4">
+                    {WATCHDOG_TOGGLE}
+                </div>
+            </div>
+            <div class="row mt-3 justify-content-md-center">
+                <div class="col-4">
+                    {WEBFLOW_TOGGLE}
+                </div>
+            </div>
+            <div class="row mt-3 justify-content-md-center">
+                <div class="col-4">
+                    {ADMIN_SERVER_TOGGLE}
+                </div>
+            </div>
+            <div class="row mt-3 justify-content-md-center">
+                <div class="col-4">
+                    {SOCKET_SERVER_TOGGLE}
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-2">
+                <div class="text-light">
+                &emsp;
+                </div>
+            </div>
+            <div class="col-10">
+                <div class="text-light">
+                    {MESSAGE}
+                </div>
+            </div>
+            <div class="col-2">
+                &emsp;
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

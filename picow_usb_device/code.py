@@ -57,7 +57,7 @@ pool = socketpool.SocketPool(wifi.radio)
 host = str(wifi.radio.ipv4_address)
 
 usb_handler = UsbHandler()
-
+control_handler = ControlMessageHandler()
 
 server = None
 if get_config_or_default("SOCKET_SERVER_ENABLED", config):
@@ -65,11 +65,11 @@ if get_config_or_default("SOCKET_SERVER_ENABLED", config):
 
 http_server = None
 if get_config_or_default("HTTP_SERVER_ENABLED", config):
-    http_server = UsbHttpServer(pool, "HttpServer", usb_handler)
+    http_server = UsbHttpServer(pool, "HttpServer", usb_handler, control_handler)
 
 admin_server = None
 if get_config_or_default("ADMIN_SERVER_ENABLED", config):
-    admin_server = MessageServer(pool, "AdminServer", ControlMessageHandler())
+    admin_server = MessageServer(pool, "AdminServer", control_handler)
 
 if server is not None:
     server.start(host, get_config_or_default("PORT", config))
@@ -92,3 +92,6 @@ while True:
     except OSError as e:
         print(e)
         continue
+    except Exception as e:
+        print(e)
+        raise e
