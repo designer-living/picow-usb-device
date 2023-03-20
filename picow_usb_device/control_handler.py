@@ -178,6 +178,8 @@ class ControlMessageHandler:
             storage.remount("/", True)
             return self.DONE
         except Exception as e:
+            # Reload the config if we had an error.
+            self._read_config()
             return f"{e}\n".encode()
 
     def _read_config(self):
@@ -190,9 +192,7 @@ class ControlMessageHandler:
 
     def _toggle(self, key):
         self._read_config()
-        value =  self._write_config(key, not self.config[key])
-        print(value)
-        return value
+        return self._write_config(key, not self.config[key])
 
     def _read_settings_toml(self):
         try:

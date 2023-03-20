@@ -1,7 +1,7 @@
 from adafruit_httpserver.mime_type import MIMEType
-from adafruit_httpserver.request import HTTPRequest
 from adafruit_httpserver.response import HTTPResponse
 from adafruit_httpserver.server import HTTPServer
+from adafruit_httpserver.status import HTTPStatus
 
 from usb_handler import UsbHandler
 
@@ -28,6 +28,7 @@ class UsbHttpServer:
         self.handler = handler
         self.control_handler = control_handler
         self.name = name
+        self.last_message = ""
         if buffer_size is not None:
             self.server.request_buffer_size = buffer_size
 
@@ -84,29 +85,28 @@ class UsbHttpServer:
 
         @self.server.route("/USB_TOGGLE")
         def usb_toggle(request):
-            message = self.control_handler.handle_message("USB_TOGGLE")
-            serve_admin_file(request, message)
+            self.last_message = self.control_handler.handle_message("USB_TOGGLE")
+            serve_redirect(request, "/ADMIN")
 
         @self.server.route("/WATCHDOG_TOGGLE")
         def watchdog_toggle(request):
-            message = self.control_handler.handle_message("WATCHDOG_TOGGLE")
-            serve_admin_file(request, message)
+            self.last_message = self.control_handler.handle_message("WATCHDOG_TOGGLE")
+            serve_redirect(request, "/ADMIN")
 
         @self.server.route("/WEBFLOW_TOGGLE")
         def webflow_toggle(request):
-            message = self.control_handler.handle_message("WEBFLOW_TOGGLE")
-            serve_admin_file(request, message)
+            self.last_message = self.control_handler.handle_message("WEBFLOW_TOGGLE")
+            serve_redirect(request, "/ADMIN")
 
         @self.server.route("/ADMIN_SERVER_TOGGLE")
         def admin_server_reset(request):
-            message = self.control_handler.handle_message("ADMIN_SERVER_TOGGLE")
-            serve_admin_file(request, message)
+            self.last_message = self.control_handler.handle_message("ADMIN_SERVER_TOGGLE")
+            serve_redirect(request, "/ADMIN")
 
         @self.server.route("/SOCKET_SERVER_TOGGLE")
         def socket_server_reset(request):
-            message = self.control_handler.handle_message("SOCKET_SERVER_TOGGLE")
-            print(message)
-            serve_admin_file(request, message)
+            self.last_message = self.control_handler.handle_message("SOCKET_SERVER_TOGGLE")
+            serve_redirect(request, "/ADMIN")
 
         def serve_index_file(request):
             with HTTPResponse(request, content_type=MIMEType.TYPE_HTML) as response:
@@ -116,8 +116,22 @@ class UsbHttpServer:
             with HTTPResponse(request, content_type=MIMEType.TYPE_TXT ) as response:
                 response.send(text)
 
-        def serve_admin_file(request, message=""):
+        def serve_redirect(request, location):
+            redirect_status = HTTPStatus(307, "Temporary Redirect")
+            response = HTTPResponse(
+                request=request,
+                status=redirect_status,
+                headers={
+                    "Location": location,
+                }
+            )
+            with response:
+                response.send("")
+
+        def serve_admin_file(request):
             with HTTPResponse(request, content_type=MIMEType.TYPE_HTML) as response:
+                # Refresh the config before loading.
+                self.control_handler.handle_message("CONFIG")
                 config = control_handler.config
                 web_flow_enabled = control_handler.web_flow_enabled
                 replacement = {
@@ -126,8 +140,9 @@ class UsbHttpServer:
                     "WEBFLOW_TOGGLE": _get_button_html("WEBFLOW_TOGGLE", "WEBFLOW", web_flow_enabled),
                     "ADMIN_SERVER_TOGGLE": _get_button_html("ADMIN_SERVER_TOGGLE", "Admin Server", config["ADMIN_SERVER_ENABLED"]),
                     "SOCKET_SERVER_TOGGLE": _get_button_html("SOCKET_SERVER_TOGGLE", "Socket Server", config["SOCKET_SERVER_ENABLED"]),
-                    "MESSAGE": message
+                    "MESSAGE": self.last_message
                 }
+                self.last_message = ""
                 with open("/html/admin.html") as f:
                     admin_file = f.read()
                     admin_file = admin_file.format(**replacement)
