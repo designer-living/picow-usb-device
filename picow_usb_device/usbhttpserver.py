@@ -3,8 +3,6 @@ from adafruit_httpserver.response import HTTPResponse
 from adafruit_httpserver.server import HTTPServer
 from adafruit_httpserver.status import HTTPStatus
 
-from usb_handler import UsbHandler
-
 EMPTY_STRING = ""
 MESSAGE_DELIMITER = ord("\n")
 TRIM_CHAR = "\r"
@@ -60,13 +58,17 @@ class UsbHttpServer:
 
         @self.server.route("/SOFT_RESET")
         def soft_reset(request):
+            # For reset, we return the redirect response and then do the reset.
+            # Otherwise, Chrome will stay on the reset page and will periodically reload it causing a reset
+            serve_redirect(request, "/ADMIN")
             self.control_handler.handle_message("SOFT_RESET")
-            serve_admin_file(request)
 
         @self.server.route("/HARD_RESET")
         def hard_reset(request):
+            # For reset, we return the redirect response and then do the reset.
+            # Otherwise, Chrome will stay on the reset page and will periodically reload it causing a reset
+            serve_redirect(request, "/ADMIN")
             self.control_handler.handle_message("HARD_RESET")
-            serve_admin_file(request)
 
         @self.server.route("/SHOW_BOOT_OUT")
         def show_boot_out(request):
