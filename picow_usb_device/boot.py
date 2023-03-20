@@ -2,8 +2,25 @@ from board import *
 import storage
 import digitalio
 import json
-
+import microcontroller
 from config import DEFAULT_CONFIG
+from utils import precode_file_write
+
+
+# boot.py is the entry point for RESET (software, reset button, or power cycle)
+# read and process safemode.json if desired
+
+# NVM Safe Mode - clear it for the next Safe Mode
+# if microcontroller.nvm[NVM_INDEX_SAFEMODE] != SAFEMODECLEAR:
+#     microcontroller.nvm[NVM_INDEX_SAFEMODE] = SAFEMODECLEAR
+
+# set up the boot dict
+boot_dict = {"reset_reason": str(microcontroller.cpu.reset_reason)}
+# update_restart_dict_time(boot_dict)  # add timestamp
+
+# write dict as JSON
+precode_file_write("/boot.json", json.dumps(boot_dict))  # use storage.remount()
+
 
 # If GPIO 15 is shorted we will enable storage
 noStoragePin = digitalio.DigitalInOut(GP15)
@@ -30,16 +47,7 @@ for key in DEFAULT_CONFIG.keys():
 if write_config:
     try:
         print("Saving config")
-        storage.remount(
-            mount_path="/",
-            readonly=False,
-        )
-        with open("config.json", "w") as f:
-            json.dump(config, f)
-        storage.remount(
-            mount_path="/",
-            readonly=True,
-        )
+        precode_file_write("config.json", json.dumps(config))
         print("Config saved")
     except Exception as e:
         print("Error writing config:", e)
