@@ -12,6 +12,7 @@ import microcontroller
 import watchdog
 import os
 import json
+from utils import create_run_dict
 
 from config import DEFAULT_CONFIG, get_config_or_default
 
@@ -19,6 +20,9 @@ from messageserver import MessageServer
 from usbhttpserver import UsbHttpServer
 from usb_handler import UsbHandler
 from control_handler import ControlMessageHandler
+
+run_dict = create_run_dict()
+print(run_dict)
 
 # Load Config from config.json
 config = {}

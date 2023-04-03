@@ -4,20 +4,18 @@ import digitalio
 import json
 import microcontroller
 from config import DEFAULT_CONFIG
-from utils import precode_file_write
+from utils import *
 
 
 # boot.py is the entry point for RESET (software, reset button, or power cycle)
 # read and process safemode.json if desired
 
 # NVM Safe Mode - clear it for the next Safe Mode
-# if microcontroller.nvm[NVM_INDEX_SAFEMODE] != SAFEMODECLEAR:
-#     microcontroller.nvm[NVM_INDEX_SAFEMODE] = SAFEMODECLEAR
+if microcontroller.nvm[NVM_INDEX_SAFEMODE] != SAFEMODECLEAR:
+    microcontroller.nvm[NVM_INDEX_SAFEMODE] = SAFEMODECLEAR
 
 # set up the boot dict
-boot_dict = {"reset_reason": str(microcontroller.cpu.reset_reason)}
-# update_restart_dict_time(boot_dict)  # add timestamp
-
+boot_dict = create_boot_dict()
 # write dict as JSON
 precode_file_write("/boot.json", json.dumps(boot_dict))  # use storage.remount()
 
