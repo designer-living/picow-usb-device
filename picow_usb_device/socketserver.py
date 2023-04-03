@@ -66,7 +66,6 @@ class SocketServer:
         self._sock.setblocking(False)  # non-blocking socket
         self._sock.bind((host, port))
         self._sock.listen(10)
-        self._send_buffer = list()
 
     def poll(self):
         """
@@ -78,13 +77,7 @@ class SocketServer:
             still_open = self._poll_incoming_messages(conn)
             if not still_open:
                 self._connections.remove(conn)
-#        for message in self._send_buffer:
-#            for conn in self._connections:
-#                self._send(conn, message)
         self._poll_incoming_connections()
-
-    def send(self, message):
-        self._send_buffer.append(message)
 
     def _send(self, conn, buf):  # pylint: disable=no-self-use
         bytes_sent = 0
@@ -98,6 +91,7 @@ class SocketServer:
                     continue
                 if exc.errno == ECONNRESET:
                     return
+                raise
 
     def _poll_incoming_messages(self, conn):
         try:

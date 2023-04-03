@@ -3,6 +3,7 @@
 import time
 time.sleep(5)
 
+import traceback
 import socketpool
 import wifi
 import board
@@ -90,7 +91,8 @@ while True:
             admin_server.poll()
         time.sleep(0.001)
     except OSError as e:
-        print(e)
+        formatted = traceback.format_exception(e)
+        print(formatted)
         continue
     except Exception as e:
         print(e)
