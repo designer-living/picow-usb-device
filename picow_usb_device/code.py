@@ -1,7 +1,7 @@
 # This is a workaround mentioned here:
 # https://github.com/adafruit/circuitpython/issues/7333
 import time
-time.sleep(5)
+# time.sleep(5)
 
 import traceback
 import socketpool
@@ -16,6 +16,7 @@ from utils import create_run_dict
 
 from config import DEFAULT_CONFIG, get_config_or_default
 
+from iot_management_client import IotManagementClient
 from messageserver import MessageServer
 from usbhttpserver import UsbHttpServer
 from usb_handler import UsbHandler
@@ -60,6 +61,12 @@ if not wifi.radio.ipv4_address:
 
 pool = socketpool.SocketPool(wifi.radio)
 host = str(wifi.radio.ipv4_address)
+
+updater = IotManagementClient(
+    identifier="ALL",
+    server_url="http://192.168.1.12:80",
+    socket_pool=pool,
+)
 
 usb_handler = UsbHandler()
 control_handler = ControlMessageHandler()
